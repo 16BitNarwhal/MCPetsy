@@ -27,17 +27,35 @@ def run_browser_search_background(job_id: str, query: str):
             llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
             task = f"Search Google for '{query}' and tell me what the top result is (include the title and the URL)"
 
-            # Configure browser path for production
+            # Try to configure browser-use to use our Chrome installation
             if os.environ.get("ENVIRONMENT") == "production":
-                # Point to the Chrome we installed in render-build.sh
-                os.environ["CHROME_EXECUTABLE_PATH"] = (
+                # Try multiple environment variables that might work
+                chrome_path = (
                     "/opt/render/project/.render/chrome/opt/google/chrome/google-chrome"
                 )
+                os.environ["CHROME_BIN"] = chrome_path
+                os.environ["CHROME_EXECUTABLE_PATH"] = chrome_path
+                os.environ["GOOGLE_CHROME_BIN"] = chrome_path
                 os.environ["PLAYWRIGHT_BROWSERS_PATH"] = (
                     "/opt/render/.cache/ms-playwright"
                 )
+                os.environ["PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD"] = "1"
 
-            agent = Agent(task=task, llm=llm)
+                # Try to create agent with explicit browser config
+                try:
+                    from browser_use.browser.config import BrowserConfig
+
+                    config = BrowserConfig(
+                        chrome_instance_path=chrome_path,
+                        headless=True,
+                        disable_security=True,
+                    )
+                    agent = Agent(task=task, llm=llm, browser_config=config)
+                except:
+                    # Fallback to simple agent if config doesn't work
+                    agent = Agent(task=task, llm=llm)
+            else:
+                agent = Agent(task=task, llm=llm)
             return await agent.run()
 
         # Run in new event loop (background thread)
