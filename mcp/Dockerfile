@@ -1,5 +1,5 @@
-# Base docker image - use Debian like the proven example
-FROM debian:bullseye-slim
+# Base docker image - use Python 3.11 with Debian base for Chrome compatibility
+FROM python:3.11-bullseye
 
 # Install Chrome (based on proven jess/chrome Dockerfile)
 RUN apt-get update && apt-get install -y \
@@ -8,9 +8,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     wget \
-    python3 \
-    python3-pip \
-    python3-venv \
     # Chrome dependencies from proven example
     hicolor-icon-theme \
     libcanberra-gtk3-0 \
@@ -55,10 +52,10 @@ WORKDIR /app
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright browsers
-RUN python3 -m playwright install chromium
+RUN python -m playwright install chromium
 
 # Copy application code
 COPY . .
@@ -67,4 +64,4 @@ COPY . .
 EXPOSE 8000
 
 # Start the application
-CMD ["python3", "src/server.py"]
+CMD ["python", "src/server.py"]
