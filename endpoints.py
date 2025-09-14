@@ -3,8 +3,12 @@ import asyncio
 import threading
 import time
 import uuid
+import sys
 from fastmcp import FastMCP  # type: ignore
 from dotenv import load_dotenv
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from agent_to_integrate import main as run_agent
 from handleImage import analyze_image
 
@@ -19,6 +23,7 @@ def run_kijiji_posting_background(job_id: str, product_info: dict):
     global agent_running
     try:
         jobs[job_id]["status"] = "running"
+        
         jobs[job_id]["started_at"] = time.time()
         agent_running = True
 
