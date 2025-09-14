@@ -3,11 +3,9 @@ services:
     name: fastmcp-server
     runtime: python
     buildCommand: bash render-build.sh
-    startCommand: export PATH="${PATH}:/opt/render/project/.render/chrome/opt/google/chrome"; python src/server.py
+    startCommand: python src/server.py
     plan: free
     autoDeploy: false
     envVars:
       - key: ENVIRONMENT
         value: production
-      - key: CHROME_BIN
-        value: /opt/render/project/.render/chrome/opt/google/chrome/google-chrome
