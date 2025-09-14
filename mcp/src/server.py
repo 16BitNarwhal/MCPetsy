@@ -3,14 +3,27 @@ import asyncio
 import threading
 import time
 import uuid
+import sys
 from fastmcp import FastMCP  # type: ignore
 from dotenv import load_dotenv
 from browser_use import Agent, ChatAnthropic
 
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    # Import existing Kijiji functions
+    import endpoints
+
+    KIJIJI_AVAILABLE = True
+except ImportError:
+    KIJIJI_AVAILABLE = False
+    endpoints = None
+
 # Load environment variables
 load_dotenv()
 
-mcp = FastMCP("Sample MCP Server with Browser Automation")
+mcp = FastMCP("Kijiji Auto-Posting MCP Server with Browser Automation")
 
 # Simple in-memory job store for background tasks
 jobs = {}
@@ -116,7 +129,7 @@ def run_browser_search_background(job_id: str, query: str):
 @mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
 def greet(name: str) -> str:
     print(f"Greeting {name}")
-    return f"Hello, {name}! Welcome to our sample MCP server running on Heroku!"
+    return f"Hello, {name}! Meow to our sample MCP server running on Heroku!"
 
 
 @mcp.tool(
@@ -124,11 +137,12 @@ def greet(name: str) -> str:
 )
 def get_server_info() -> dict:
     return {
-        "server_name": "Sample MCP Server with Browser Automation",
+        "server_name": "Kijiji Auto-Posting MCP Server with Browser Automation",
         "version": "1.0.0",
         "environment": os.environ.get("ENVIRONMENT", "development"),
         "python_version": os.sys.version.split()[0],
         "browser_automation": "enabled",
+        "kijiji_integration": "available" if KIJIJI_AVAILABLE else "unavailable",
     }
 
 
@@ -212,6 +226,31 @@ def get_search_status(job_id: str) -> dict:
         )
 
     return response
+
+
+@mcp.tool(
+    description="List or post an item to sell on Kijiji. Category must be one of Buy & Sell, Arts & Collectibles, Audio, Baby Items, Bags & Luggage, Bikes, Books, Business & Industrial, Cameras & Camcorders, CDs, DVDs & Blu-ray, Clothing, Computers, Computer Accessories, Electronics, Free Stuff, Furniture, Garage Sales, Health & Special Needs, Hobbies & Crafts, Home Appliances, Home - Indoor, Home - Outdoor & Garden, Home Renovation Materials, Jewellery & Watches, Musical Instruments, Phones, Sporting Goods & Exercise, Tools, Toys & Games, TVs & Video, Video Games & Consoles, Other"
+)
+def post_to_kijiji(
+    title: str,
+    description: str,
+    price: str,
+) -> dict:
+    """Analyze image and post to Kijiji using existing endpoints"""
+    if not KIJIJI_AVAILABLE:
+        return {"success": False, "error": "Kijiji integration not available"}
+
+    return endpoints.post_to_kijiji(title, description, price)
+    # return endpoints.analyze_and_post_to_kijiji(image_data, image_media_type)
+
+
+# @mcp.tool(description="Check if Kijiji agent is running")
+# def conversation_finished() -> dict:
+#     """Check Kijiji agent status using existing endpoints"""
+#     if not KIJIJI_AVAILABLE:
+#         return {"success": False, "error": "Kijiji integration not available"}
+
+#     return endpoints.conversation_finished()
 
 
 # @mcp.tool(description="Get information about browser automation capabilities")
