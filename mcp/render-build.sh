@@ -6,32 +6,8 @@ set -o errexit
 ORIGINAL_DIR=$(pwd)
 STORAGE_DIR=/opt/render/project/.render
 
-# Install Chrome system dependencies
-echo "Installing system dependencies for Chrome..."
-apt-get update -qq
-apt-get install -y -qq \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgbm1 \
-    libxss1 \
-    libasound2 \
-    libatspi2.0-0 \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
-    libnss3 \
-    libxcursor1 \
-    libxi6 \
-    libxtst6 \
-    libappindicator3-1 \
-    libindicator7 \
-    libpango-1.0-0 \
-    libcairo-gobject2 \
-    fonts-liberation
+# Skip system dependencies - Render's environment is read-only
+echo "Skipping system dependencies due to read-only filesystem..."
 
 if [[ ! -d $STORAGE_DIR/chrome ]]; then
   echo "...Downloading Chrome"
@@ -59,8 +35,8 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # Install Python dependencies (requirements.txt is in starting directory)
 pip install -r requirements.txt
 
-# Install Playwright browsers with system dependencies
-echo "Installing Playwright browsers with dependencies..."
-python -m playwright install chromium --with-deps
+# Install Playwright browsers (without --with-deps due to read-only filesystem)
+echo "Installing Playwright browsers..."
+python -m playwright install chromium
 
 echo "Build complete"
