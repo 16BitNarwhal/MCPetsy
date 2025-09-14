@@ -98,15 +98,22 @@ def analyze_and_post_to_kijiji(image_data: str, image_media_type: str = "image/j
             "error": f"Error processing image: {str(e)}"
         }
 
-@mcp.tool(description="Mark conversation as finished")
+@mcp.tool(description="Check if conversation/agent is finished")
 def conversation_finished() -> dict:
     global agent_running
     
-    agent_running = False
-    return {
-        "success": True,
-        "message": "Conversation finished"
-    }
+    if agent_running:
+        return {
+            "success": True,
+            "finished": False,
+            "message": "Agent is still running"
+        }
+    else:
+        return {
+            "success": True,
+            "finished": True,
+            "message": "Agent has finished"
+        }
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

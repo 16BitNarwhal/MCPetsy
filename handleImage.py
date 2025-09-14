@@ -4,6 +4,42 @@ from anthropic import Anthropic
 
 client = Anthropic()
 
+# Valid categories from the Kijiji category selection
+VALID_CATEGORIES = [
+    "Buy & Sell",
+    "Arts & Collectibles", 
+    "Audio",
+    "Baby Items",
+    "Bags & Luggage",
+    "Bikes",
+    "Books",
+    "Business & Industrial",
+    "Cameras & Camcorders",
+    "CDs, DVDs & Blu-ray",
+    "Clothing",
+    "Computers",
+    "Computer Accessories",
+    "Electronics",
+    "Free Stuff",
+    "Furniture",
+    "Garage Sales",
+    "Health & Special Needs",
+    "Hobbies & Crafts",
+    "Home Appliances",
+    "Home - Indoor",
+    "Home - Outdoor & Garden",
+    "Home Renovation Materials",
+    "Jewellery & Watches",
+    "Musical Instruments",
+    "Phones",
+    "Sporting Goods & Exercise",
+    "Tools",
+    "Toys & Games",
+    "TVs & Video",
+    "Video Games & Consoles",
+    "Other"
+]
+
 def extract_json_from_text(text):
     """Extract JSON from text that might contain other content"""
     # Look for JSON object in the text
@@ -20,9 +56,27 @@ def extract_json_from_text(text):
     except json.JSONDecodeError:
         return None
 
+def validate_and_fix_category(category):
+    """Validate category and return a valid one, defaulting to 'Other' if not found"""
+    if category in VALID_CATEGORIES:
+        return category
+    
+    # Try to find a close match (case-insensitive)
+    category_lower = category.lower()
+    for valid_cat in VALID_CATEGORIES:
+        if valid_cat.lower() == category_lower:
+            return valid_cat
+    
+    # If no match found, return 'Other'
+    print(f"Category '{category}' not found in valid categories, defaulting to 'Other'")
+    return "Other"
+
 def analyze_image(image_data, image_media_type):
     """Analyze base64 image using Claude Vision to extract product info and price"""
     try:
+        # Create the categories list for the prompt
+        categories_text = "\n".join([f"- {cat}" for cat in VALID_CATEGORIES])
+        
         message = client.messages.create(
             model="claude-sonnet-4-0",
             max_tokens=1024,
@@ -40,17 +94,20 @@ def analyze_image(image_data, image_media_type):
                         },
                         {
                             "type": "text",
-                            "text": """Analyze this image and provide product information for a Kijiji listing.
+                            "text": f"""Analyze this image and provide product information for a Kijiji listing.
 
 IMPORTANT: Respond ONLY with valid JSON in this exact format:
-{
+{{
     "title": "Product title here",
     "description": "Detailed product description here",
-    "price": "25.00",
+    "price": "25",
     "category": "Electronics"
-}
+}}
 
-Do not include any other text, explanations, or formatting outside the JSON object."""
+The category MUST be one of these exact options:
+{categories_text}
+
+Choose the most appropriate category from the list above. Do not include any other text, explanations, or formatting outside the JSON object."""
                         }
                     ],
                 }
@@ -74,9 +131,12 @@ Do not include any other text, explanations, or formatting outside the JSON obje
                 print(f"Missing required field: {field}")
                 raise ValueError(f"Missing required field: {field}")
         
+        # Validate and fix category
+        product_info["category"] = validate_and_fix_category(product_info["category"])
+        
         # Ensure price is a string with proper format
         if isinstance(product_info["price"], (int, float)):
-            product_info["price"] = f"{product_info['price']:.2f}"
+            product_info["price"] = str(int(product_info['price']))
         
         print(f"Parsed product info: {product_info}")
         return product_info
@@ -94,6 +154,6 @@ def get_fallback_product_info():
     return {
         "title": "Sample Product",
         "description": "Product description could not be generated. Please add details manually.",
-        "price": "13.00",
-        "category": "General",
+        "price": "13",
+        "category": "Other",
     }
