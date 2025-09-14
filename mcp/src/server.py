@@ -53,7 +53,7 @@ def run_browser_search_background(job_id: str, query: str):
         # Run browser automation
         async def search():
             llm = ChatAnthropic(model="claude-sonnet-4-0", temperature=0.0)
-            task = f"Go to https://www.google.com/search?q={query}, and tell me what the top result is (include the title and the URL)."
+            task = f"Go to https://duckduckgo.com/?t=h_&q={query.replace(' ', '+')}&ia=web, and tell me what the top result is (include the title and the URL)."
 
             # Simple agent - Docker handles all browser setup
             agent = Agent(task=task, llm=llm)
