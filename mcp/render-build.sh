@@ -22,7 +22,16 @@ fi
 echo "Chrome version:"
 $STORAGE_DIR/chrome/opt/google/chrome/google-chrome --version
 
+# Install uv (Python package manager that browser-use needs)
+echo "Installing uv..."
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Install Python dependencies (requirements.txt is in starting directory)
 pip install -r requirements.txt
+
+# Install Playwright browsers (needed for browser-use)
+echo "Installing Playwright browsers..."
+python -m playwright install chromium
 
 echo "Build complete"
