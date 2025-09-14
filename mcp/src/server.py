@@ -52,14 +52,14 @@ def run_browser_search_background(job_id: str, query: str):
 
         # Run browser automation
         async def search():
-            llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
-            task = f"Go to DuckDuckGo.com, search for '{query}', and tell me what the top result is (include the title and the URL)."
+            llm = ChatAnthropic(model="claude-sonnet-4-0", temperature=0.0)
+            task = f"Go to Google, search for '{query}', and tell me what the top result is (include the title and the URL)."
 
             # Simple agent - Docker handles all browser setup
             agent = Agent(task=task, llm=llm)
             result = await asyncio.wait_for(
-                agent.run(), timeout=120.0
-            )  # 2 minute timeout
+                agent.run(), timeout=180.0
+            )  # 3 minute timeout
 
             # Store successful result
             jobs[job_id].update(
@@ -87,7 +87,7 @@ def run_browser_search_background(job_id: str, query: str):
         jobs[job_id].update(
             {
                 "status": "failed",
-                "error": "Browser search timed out after 2 minutes",
+                "error": "Browser search timed out after 3 minutes",
                 "completed_at": time.time(),
             }
         )
@@ -95,7 +95,7 @@ def run_browser_search_background(job_id: str, query: str):
         # Send timeout notification
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        timeout_message = f"This is a message from the Kijiji integration. The browser agent timed out while searching for '{query}' (took longer than 2 minutes). Alert the user about this timeout in your natural voice."
+        timeout_message = f"This is a message from the Kijiji integration. The browser agent timed out while searching for '{query}' (took longer than 3 minutes). Alert the user about this timeout in your natural voice."
         loop.run_until_complete(send_poke_notification(timeout_message))
         loop.close()
 
@@ -157,7 +157,6 @@ def search_web(query: str) -> dict:
     thread.start()
 
     return {
-        "job_id": job_id,
         "query": query,
         "status": "working_on_it",
         "message": f"🔍 Working on it now! Starting browser search for '{query}'...",
