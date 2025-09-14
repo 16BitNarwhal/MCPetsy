@@ -16,37 +16,101 @@ mcp = FastMCP("Sample MCP Server with Browser Automation")
 jobs = {}
 
 
+async def send_poke_notification(message: str):
+    """Send notification via Poke API when browser automation completes"""
+    try:
+        import requests
+
+        poke_api_key = os.environ.get("POKE_API_KEY")
+        if not poke_api_key:
+            print("⚠️ No POKE_API_KEY found - skipping notification")
+            return
+
+        response = requests.post(
+            "https://poke.com/api/v1/inbound-sms/webhook",
+            headers={
+                "Authorization": f"Bearer {poke_api_key}",
+                "Content-Type": "application/json",
+            },
+            json={"message": message},
+        )
+
+        if response.ok:
+            print(f"✅ Poke notification sent: {message[:100]}...")
+        else:
+            print(f"❌ Poke notification failed: {response.status_code}")
+
+    except Exception as e:
+        print(f"❌ Error sending Poke notification: {e}")
+
+
 def run_browser_search_background(job_id: str, query: str):
-    """Run browser automation in background thread"""
+    """Run browser automation in background thread and notify via Poke when done"""
     try:
         jobs[job_id]["status"] = "running"
         jobs[job_id]["started_at"] = time.time()
 
         # Run browser automation
         async def search():
-            llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
-            task = f"Search Google for '{query}' and tell me what the top result is (include the title and the URL)"
+            llm = ChatAnthropic(model="claude-sonnet-4-0", temperature=0.0)
+            task = f"Go to https://duckduckgo.com/?t=h_&q={query.replace(' ', '+')}&ia=web, and tell me what the top result is (include the title and the URL)."
 
             # Simple agent - Docker handles all browser setup
             agent = Agent(task=task, llm=llm)
-            return await agent.run()
+            result = await asyncio.wait_for(
+                agent.run(), timeout=180.0
+            )  # 3 minute timeout
+
+            # Store successful result
+            jobs[job_id].update(
+                {
+                    "status": "completed",
+                    "result": str(result),
+                    "completed_at": time.time(),
+                }
+            )
+
+            # Send Poke notification with result
+            notification_message = f"This is a message from the Kijiji integration. The browser agent has finished searching for '{query}' and returned: {str(result)[:200]}... Alert the user now in your natural voice."
+            await send_poke_notification(notification_message)
+
+            return result
 
         # Run in new event loop (background thread)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(search())
+        loop.run_until_complete(search())
         loop.close()
 
-        # Store successful result
+    except asyncio.TimeoutError:
+        # Handle timeout specifically
         jobs[job_id].update(
-            {"status": "completed", "result": str(result), "completed_at": time.time()}
+            {
+                "status": "failed",
+                "error": "Browser search timed out after 3 minutes",
+                "completed_at": time.time(),
+            }
         )
 
+        # Send timeout notification
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        timeout_message = f"This is a message from the Kijiji integration. The browser agent timed out while searching for '{query}' (took longer than 3 minutes). Alert the user about this timeout in your natural voice."
+        loop.run_until_complete(send_poke_notification(timeout_message))
+        loop.close()
+
     except Exception as e:
-        # Store error result
+        # Store error result and notify
         jobs[job_id].update(
             {"status": "failed", "error": str(e), "completed_at": time.time()}
         )
+
+        # Send Poke notification about failure
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        error_message = f"This is a message from the Kijiji integration. The browser agent failed while searching for '{query}'. Error: {str(e)}. Alert the user about this failure in your natural voice."
+        loop.run_until_complete(send_poke_notification(error_message))
+        loop.close()
 
 
 @mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
@@ -68,17 +132,17 @@ def get_server_info() -> dict:
     }
 
 
-@mcp.tool(description="Start a background browser search and return job ID")
+@mcp.tool(description="Start a Browser search and get notified via Poke when complete")
 def search_web(query: str) -> dict:
     """
-    Start a browser automation search in the background.
-    Returns immediately with a job ID that can be polled for results.
+    Start a web search in the background.
+    Returns immediately and sends results via Poke API when complete.
 
     Args:
-        query: The search term to look for
+        query: The search term to look for on the web
 
     Returns:
-        dict: Contains job ID and polling instructions
+        dict: Immediate response confirming search started
     """
     # Generate unique job ID
     job_id = str(uuid.uuid4())
@@ -93,11 +157,10 @@ def search_web(query: str) -> dict:
     thread.start()
 
     return {
-        "job_id": job_id,
         "query": query,
-        "status": "queued",
-        "message": "Browser search started in background",
-        "instructions": "Use get_search_status tool to check progress",
+        "status": "working_on_it",
+        "message": f"🔍 Working on it now! Starting web search for '{query}'...",
+        "notification": "You'll get a Poke notification when the search completes with results!",
     }
 
 
