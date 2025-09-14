@@ -26,12 +26,7 @@ def run_browser_search_background(job_id: str, query: str):
         async def search():
             llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
             task = f"Search Google for '{query}' and tell me what the top result is (include the title and the URL)"
-
-            # Configure for production environment
-            if os.environ.get("ENVIRONMENT") == "production":
-                agent = Agent(task=task, llm=llm, browser="chrome", headless=True)
-            else:
-                agent = Agent(task=task, llm=llm)
+            agent = Agent(task=task, llm=llm)
 
             return await agent.run()
 
