@@ -99,4 +99,16 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     host = "0.0.0.0"
     print(f"Starting FastMCP server on {host}:{port}")
-    mcp.run(transport="http", host=host, port=port)
+
+    # Configure longer timeouts for browser automation (based on forum discussion)
+    mcp.run(
+        transport="http",
+        host=host,
+        port=port,
+        timeout=120.0,  # 2 minute default timeout for all requests
+        uvicorn_config={
+            "timeout_keep_alive": 180,  # Keep connections alive for 3 minutes
+            "timeout_graceful_shutdown": 30,
+            "access_log": True,
+        },
+    )
