@@ -11,7 +11,7 @@ if [[ ! -d $STORAGE_DIR/chrome ]]; then
   wget -P ./ https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
   dpkg -x ./google-chrome-stable_current_amd64.deb $STORAGE_DIR/chrome
   rm ./google-chrome-stable_current_amd64.deb
-  cd $HOME/project/src # Make sure we return to where we were
+  cd $HOME/mcp # Return to project root where requirements.txt is
 else
   echo "...Using Chrome from cache"
 fi
@@ -20,7 +20,8 @@ fi
 echo "Chrome version:"
 $STORAGE_DIR/chrome/opt/google/chrome/google-chrome --version
 
-# Install Python dependencies
+# Install Python dependencies (from project root)
+cd $HOME/mcp
 pip install -r requirements.txt
 
 echo "Build complete"
