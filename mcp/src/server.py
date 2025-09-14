@@ -60,6 +60,7 @@ def run_browser_search_background(job_id: str, query: str):
 
 @mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
 def greet(name: str) -> str:
+    print(f"Greeting {name}")
     return f"Hello, {name}! Welcome to our sample MCP server running on Heroku!"
 
 
