@@ -53,7 +53,7 @@ def run_browser_search_background(job_id: str, query: str):
         # Run browser automation
         async def search():
             llm = ChatAnthropic(model="claude-sonnet-4-0", temperature=0.0)
-            task = f"Go to Google, search for '{query}', and tell me what the top result is (include the title and the URL)."
+            task = f"Go to kijiji.ca, search for '{query}', and tell me what the top result is (include the title and the URL to the listing)."
 
             # Simple agent - Docker handles all browser setup
             agent = Agent(task=task, llm=llm)
@@ -87,7 +87,7 @@ def run_browser_search_background(job_id: str, query: str):
         jobs[job_id].update(
             {
                 "status": "failed",
-                "error": "Browser search timed out after 3 minutes",
+                "error": "Kijiji search timed out after 3 minutes",
                 "completed_at": time.time(),
             }
         )
@@ -132,14 +132,14 @@ def get_server_info() -> dict:
     }
 
 
-@mcp.tool(description="Start a browser search and get notified via Poke when complete")
-def search_web(query: str) -> dict:
+@mcp.tool(description="Start a Kijiji search and get notified via Poke when complete")
+def search_kijiji(query: str) -> dict:
     """
-    Start a browser automation search in the background.
+    Start a Kijiji search in the background.
     Returns immediately and sends results via Poke API when complete.
 
     Args:
-        query: The search term to look for
+        query: The search term to look for on Kijiji
 
     Returns:
         dict: Immediate response confirming search started
@@ -159,7 +159,7 @@ def search_web(query: str) -> dict:
     return {
         "query": query,
         "status": "working_on_it",
-        "message": f"🔍 Working on it now! Starting browser search for '{query}'...",
+        "message": f"🔍 Working on it now! Starting Kijiji search for '{query}'...",
         "notification": "You'll get a Poke notification when the search completes with results!",
     }
 
