@@ -1,16 +1,8 @@
 import os
 import asyncio
-from fastmcp import FastMCP # type: ignore
+from fastmcp import FastMCP  # type: ignore
 from dotenv import load_dotenv
-
-# Optional browser automation import
-try:
-    from browser_use import Agent, ChatAnthropic
-    BROWSER_AVAILABLE = True
-except ImportError:
-    BROWSER_AVAILABLE = False
-    Agent = None
-    ChatAnthropic = None
+from browser_use import Agent, ChatAnthropic
 
 # Load environment variables
 load_dotenv()
