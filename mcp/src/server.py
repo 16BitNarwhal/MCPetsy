@@ -27,9 +27,7 @@ def run_browser_search_background(job_id: str, query: str):
             llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
             task = f"Search Google for '{query}' and tell me what the top result is (include the title and the URL)"
 
-            # Let browser-use and Playwright handle everything automatically
-            # No special configuration needed - Playwright will use its own Chromium
-
+            # Simple agent - Docker handles all browser setup
             agent = Agent(task=task, llm=llm)
             return await agent.run()
 
@@ -180,4 +178,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     host = "0.0.0.0"
     print(f"Starting FastMCP server on {host}:{port}")
-    mcp.run(transport="http", host=host, port=port)
+    mcp.run(transport="http", host=host, port=port, stateless_http=True)
