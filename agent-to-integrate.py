@@ -2,6 +2,7 @@ from browser_use import Agent, Browser, ChatAnthropic
 from dotenv import load_dotenv
 import asyncio
 import os
+from agent_messaging import agent_messaging
 
 load_dotenv()
 
@@ -48,6 +49,8 @@ async def main():
     agent.add_new_task(task2)
     
     await agent.run()
+
+    await agent_messaging(agent, 13)
 
     await browser.kill()
 
