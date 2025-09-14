@@ -26,6 +26,17 @@ def run_browser_search_background(job_id: str, query: str):
         async def search():
             llm = ChatAnthropic(model="claude-3-5-haiku-latest", temperature=0.0)
             task = f"Search Google for '{query}' and tell me what the top result is (include the title and the URL)"
+
+            # Configure browser path for production
+            if os.environ.get("ENVIRONMENT") == "production":
+                # Point to the Chrome we installed in render-build.sh
+                os.environ["CHROME_EXECUTABLE_PATH"] = (
+                    "/opt/render/project/.render/chrome/opt/google/chrome/google-chrome"
+                )
+                os.environ["PLAYWRIGHT_BROWSERS_PATH"] = (
+                    "/opt/render/.cache/ms-playwright"
+                )
+
             agent = Agent(task=task, llm=llm)
             return await agent.run()
 
