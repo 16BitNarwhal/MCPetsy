@@ -1,9 +1,7 @@
 services:
   - type: web
     name: fastmcp-server
-    runtime: python
-    buildCommand: bash render-build.sh
-    startCommand: python src/server.py
+    runtime: docker
     plan: free
     autoDeploy: false
     envVars:
