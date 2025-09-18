@@ -2,13 +2,13 @@
 
 **Sell anything online with just a text.**
 
-Mijiji is an AI-powered marketplace automation tool that lets you post items for sale with minimal effort. Simply send a photo or describe what you want to sell, and Mijiji handles the rest - from generating compelling listings, to posting them on marketplaces like Kijiji, and even negotiating with potential buyers.
+Mijiji is an AI-powered marketplace automation tool that lets you post items for sale with minimal effort. Simply send a photo or describe what you want to sell via text message, and Mijiji handles the rest - from generating compelling listings, to posting them on marketplaces like Kijiji, and even negotiating with potential buyers.
 
 ## ✨ Features
 
-- **Text-to-Listing**: Describe your item in plain text and get a fully formatted marketplace listing
+- **Text-to-Listing**: Describe your item in plain text (via text message or photo) and get a fully formatted marketplace listing
 - **AI-Powered Analysis**: Automatically categorizes products and generates optimized titles and descriptions
-- **Browser Automation**: Handles the entire posting process automatically using AI agents
+- **Browser Automation**: Handles the entire posting process automatically using AI browser-use agents
 - **Real-time Notifications**: Get notified via Poke when your listings are posted
 - **MCP Server Integration**: Works seamlessly with Claude and other AI assistants through MCP protocol
 
