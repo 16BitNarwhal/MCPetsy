@@ -77,7 +77,7 @@ Mijiji is an AI-powered marketplace automation tool that lets you post items for
 
 2. **Configure Poke MCP Integration**
 
-   In your Poke dashboard, add the Mijiji MCP server:
+   In your [Poke](https://poke.com) dashboard, add the Mijiji MCP server:
 
    - Go to your Poke MCP integration settings
    - Add your ngrok URL (e.g., `https://abc123.ngrok-free.app`) as the server endpoint
