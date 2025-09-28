@@ -1,6 +1,8 @@
 # Mijiji 🛍️
 
-**Sell anything online with just a text.** Twitter video demo [here](https://x.com/_krishchopra/status/1968570513078300938) (Winner of 2025 [Poke MCP Challenge](https://interaction.co/HackMIT) - Most Technically Impressive MCP Automation 🏆)
+**Sell anything online with just a text.** 
+
+*Twitter video demo [here](https://x.com/_krishchopra/status/1968570513078300938) (Winner of 2025 [Poke MCP Challenge](https://interaction.co/HackMIT) - Most Technically Impressive MCP Automation 🏆)*
 
 Mijiji is an AI-powered marketplace automation tool that lets you post items for sale with minimal effort. Simply send a photo or describe what you want to sell via text message, and Mijiji handles the rest - from generating compelling listings, to posting them on marketplaces like Kijiji, and even negotiating with potential buyers.
 
