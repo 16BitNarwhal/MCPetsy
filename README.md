@@ -1,18 +1,19 @@
 # Mijiji 🛍️
 
-**Sell anything online with just a text.** 
+**Sell anything online with just a text.**
 
-*Twitter video demo [here](https://x.com/_krishchopra/status/1968570513078300938) (Winner of 2025 [Poke MCP Challenge](https://interaction.co/HackMIT) - Most Technically Impressive MCP Automation 🏆)*
+_Twitter video demo [here](https://x.com/_krishchopra/status/1968570513078300938) (Winner of 2025 [Poke MCP Challenge](https://interaction.co/HackMIT) - Most Technically Impressive MCP Automation 🏆)_
 
-Mijiji is an AI-powered marketplace automation tool that lets you post items for sale with minimal effort. Simply send a photo or describe what you want to sell via text message, and Mijiji handles the rest - from generating compelling listings, to posting them on marketplaces like Kijiji, and even negotiating with potential buyers.
+Mijiji is an AI-powered marketplace automation tool that lets you post items for sale with minimal effort. Simply send a text message to [Poke](https://poke.com/) with a photo or description of what you want to sell, and Mijiji handles the rest - from generating compelling listings, to posting them on marketplaces like Kijiji, and even negotiating with potential buyers.
 
 ## ✨ Features
 
-- **Text-to-Listing**: Describe your item in plain text (via text message or photo) and get a fully formatted marketplace listing
+- **Text-to-Listing**: Describe your item in plain text or send a photo via Poke and get a fully formatted marketplace listing
 - **AI-Powered Analysis**: Automatically categorizes products and generates optimized titles and descriptions
 - **Browser Automation**: Handles the entire posting process automatically using AI browser-use agents
 - **Real-time Notifications**: Get notified via Poke when your listings are posted
-- **MCP Server Integration**: Works seamlessly with Claude and other AI assistants through MCP protocol
+- **Automated Negotiation**: AI handles buyer inquiries and negotiations on your behalf
+- **Poke MCP Server Integration**: Simple text-based interface through Poke - just text what you want to sell!
 
 ## 🚀 Quick Start
 
@@ -68,38 +69,29 @@ Mijiji is an AI-powered marketplace automation tool that lets you post items for
    ```
    Copy the HTTPS URL (e.g., `https://abc123.ngrok-free.app`)
 
-### Connecting to Claude via MCP
+### Connecting to Poke
 
-1. **Add to Claude Desktop configuration**
+1. **Set up Poke Integration**
 
-   Add this to your Claude Desktop MCP settings (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+   Make sure your `POKE_API_KEY` is configured in your `.env` file.
 
-   ```json
-   {
-     "mcpServers": {
-       "mijiji": {
-         "command": "node",
-         "args": [
-           "-e",
-           "console.log('MCP server running at https://your-ngrok-url.ngrok-free.app')"
-         ],
-         "transport": {
-           "type": "http",
-           "url": "https://your-ngrok-url.ngrok-free.app"
-         }
-       }
-     }
-   }
-   ```
+2. **Configure Poke MCP Integration**
 
-2. **Restart Claude Desktop**
+   In your Poke dashboard, add the Mijiji MCP server:
+
+   - Go to your Poke MCP integration settings
+   - Add your ngrok URL (e.g., `https://abc123.ngrok-free.app`) as the server endpoint
+   - This allows Poke to communicate with your running Mijiji server
 
 3. **Start using Mijiji!**
 
-   In Claude, you can now say things like:
+   Simply text Poke on your phone with messages like:
 
-   - "Help me sell my vintage guitar - it's a 1970s Fender Stratocaster in excellent condition, asking $1200"
+   - "Sell my vintage guitar - 1970s Fender Stratocaster in excellent condition, asking $1200"
    - "Post this laptop for sale: MacBook Pro 2021, 16GB RAM, some wear on corners, $800"
+   - Send a photo of your item with a brief description
+
+   Mijiji will handle everything from there - creating the listing, posting it to Kijiji, and even negotiating with potential buyers!
 
 ## 🔧 Available Tools
 
@@ -112,21 +104,22 @@ Mijiji is an AI-powered marketplace automation tool that lets you post items for
 
 ### Background Processing
 
-All posting operations run in the background and send notifications via Poke when complete. You can continue using Claude while Mijiji handles the posting process.
+All posting operations run in the background and send notifications via Poke when complete. You can continue with your day while Mijiji handles the entire selling process.
 
 ## 📱 Poke Integration
 
-Mijiji integrates with [Poke](https://poke.com) to send you real-time notifications when:
+Mijiji integrates with [Poke](https://poke.com) by The Interaction Company as your primary interface. Simply text Poke on your phone to:
 
-- Your item has been successfully posted
-- There's an error during posting
-- Browser automation tasks complete
+- **Sell items**: Text descriptions or send photos of what you want to sell
+- **Get updates**: Receive notifications when your items are posted
+- **Handle negotiations**: AI manages buyer conversations automatically
+- **Track progress**: Get real-time updates on posting status
 
-To set up Poke notifications:
+To set up Poke integration:
 
-1. Get your Poke API key
+1. Get your Poke API key from [poke.com](https://poke.com)
 2. Add it to your `.env` file as `POKE_API_KEY`
-3. You'll receive notifications directly through Poke when tasks complete
+3. Start texting Poke to sell your items!
 
 ## 🛠️ Development
 
